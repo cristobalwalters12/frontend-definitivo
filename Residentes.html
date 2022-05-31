@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css">  
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">    
+    <!-- JavaScript Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>   
+    <style>
+    #app{
+        background-color:#CFD8DC;      
+    }
+    </style>
+</head>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="Condominios.html">SisCom</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item active">
+              <a class="nav-link" href="Condominios.html">Condominios <span class="sr-only"></span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Residentes.html">Residentes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Reservas.html">Reservas</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="Espacioscomunes.html">Espacios Comunes</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+</header>
+<body>
+    <div id="app">
+        <v-app>
+        <v-main>   
+        <!--<h2 class="text-center">CRUD usando APIREST con Node JS</h2>-->
+        <!-- Botón CREAR -->                
+            <v-card class="mx-auto mt-5" color="transparent" max-width="1280" elevation="0">            
+            <v-btn class="mx-2" fab dark color="#E040FB" @click="formNuevo()"><v-icon dark>mdi-plus</v-icon></v-btn>           
+            <!-- Tabla y formulario -->
+            <v-simple-table class="mt-5">
+                <template v-slot:default>
+                    <thead>
+                        <tr class="purple darken-2">
+                            <th class="white--text">ID</th>
+                            <th class="white--text">NOMBRE</th>
+                            <th class="white--text">TELEFONO</th>
+                            <th class="white--text">ID CONDOMINIO</th>
+                            <th class="white--text">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="residente in residentes" :key="residente.id">
+                        <td>{{ residente.id }}</td>
+                        <td>{{ residente.nombreResidentes }}</td>
+                        <td>{{ residente.telefono }}</td>
+                        <td>{{ residente.condominio_id }}</td>
+                        <td>
+                            <v-btn class="pink" dark small fab  @click="formEditar(residente.id, residente.nombreResidentes, residente.telefono, residente.condominio_id)"><v-icon>mdi-pencil</v-icon></v-btn>
+                            <v-btn class="error" fab dark small @click="borrar(residente.id)"><v-icon>mdi-delete</v-icon></v-btn>
+                        </td>
+                        </tr>
+                    </tbody>
+                </template>
+            </v-simple-table>
+            </v-card>        
+        <!-- Componente de Diálogo para CREAR y EDITAR -->
+        <v-dialog v-model="dialog" max-width="500">        
+            <v-card>
+            <v-card-title class="purple darken-4 white--text">Residente</v-card-title>    
+            <v-card-text>            
+                <v-form>             
+                <v-container>
+                    <v-row>
+                    <input v-model="residente.id" hidden></input>
+                    <v-col cols="12" md="4">
+                        <v-text-field v-model="residente.nombreResidentes" label="Nombre residente" solo required>{{residente.nombreResidentes}}</v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-text-field v-model="residente.telefono" label="Telefono" type="number" prefix="+" solo required></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="4">
+                        <v-text-field v-model="residente.condominio_id" label="Id Condominio" type="number" solo required></v-text-field>
+                    </v-col>
+                    </v-row>
+                </v-container>            
+            </v-card-text>
+            <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn @click="dialog=false" color="blue-grey" dark>Cancelar</v-btn>
+                <v-btn @click="guardar()" type="submit" color="purple accent-3" dark>Guardar</v-btn>
+            </v-card-actions>
+            </v-form>
+            </v-card>
+        </v-dialog>
+        </v-main>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js" integrity="sha512-nqIFZC8560+CqHgXKez61MI0f9XSTKLkm0zFVm/99Wt0jSTZ7yeeYwbzyl0SGn/s8Mulbdw+ScCG41hmO2+FKw==" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        let url1 = 'http://localhost:8000/api/residentes/';
+        
+        new Vue({
+        el: '#app',
+        vuetify: new Vuetify(),
+        data() {
+            return {            
+                residentes: [],
+                dialog: false,
+                operacion: '',            
+                residente:{
+                    id: null,
+                    nombreResidentes:'',
+                    telefono:'',
+                    condominio_id:''
+                }          
+            }
+        },
+        created(){               
+                this.mostrar()
+        },  
+        methods:{          
+                //MÉTODOS PARA EL CRUD
+                mostrar:function(){
+                axios.get(url1)
+                .then(response =>{
+                    this.residentes = response.data;                   
+                })
+                },
+                crear:function(){
+                    let parametros = {nombreResidentes:this.residente.nombreResidentes, telefono:this.residente.telefono,condominio_id:this.residente.condominio_id };                
+                    axios.post(url1, parametros)
+                    .then(response =>{
+                    this.mostrar();
+                    });     
+                    this.residente.nombreResidentes="";
+                    this.residente.telefono="";
+                    this.residente.condominio_id="";
+                },                        
+                editar: function(){
+                let parametros = {nombreResidentes:this.residente.nombreResidentes, telefono:this.residente.telefono,condominio_id:this.residente.condominio_id, id_residente:this.residente.id};                            
+                //console.log(parametros);                   
+                    axios.put(url1+this.residente.id, parametros)                            
+                    .then(response => {                                
+                        this.mostrar();
+                    })                
+                    .catch(error => {
+                        console.log(error);            
+                    });
+                },
+                borrar:function(id){
+                Swal.fire({
+                    title: '¿Confirma eliminar el registro?',   
+                    confirmButtonText: `Confirmar`,                  
+                    showCancelButton: true,                          
+                }).then((result) => {                
+                    if (result.isConfirmed) {      
+                        //procedimiento borrar
+                        axios.delete(url1+id)
+                        .then(response =>{           
+                            this.mostrar();
+                        });      
+                        Swal.fire('¡Eliminado!', '', 'success')
+                    } else if (result.isDenied) {                  
+                    }
+                });              
+                },
+
+                //Botones y formularios
+                guardar:function(){
+                if(this.operacion=='crear'){
+                    this.crear();                
+                }
+                if(this.operacion=='editar'){ 
+                    this.editar();                           
+                }
+                this.dialog=false;                        
+                }, 
+                formNuevo:function () {
+                this.dialog=true;
+                this.operacion='crear';
+                this.residente.nombreResidentes='';                           
+                this.residente.telefono='';
+                this.residente.condominio_id='';
+                },
+                formEditar:function(id, nombreResidentes, telefono, condominio_id){              
+                this.dialog=true;      
+                this.operacion='editar';
+                console.log(id);                      
+                this.residente.id = id;
+                this.residente.nombreResidentes = nombreResidentes;                            
+                this.residente.telefono = telefono;
+                this.residente.condominio_id = condominio_id;                      
+                }
+        }      
+        });
+    </script>
+</body>
+</html> 
